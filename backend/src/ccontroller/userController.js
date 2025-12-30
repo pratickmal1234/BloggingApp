@@ -49,7 +49,6 @@ export const Register = async (req, res) => {
     }
 }
 
-
 export const Login = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -103,78 +102,73 @@ export const Login = async (req, res) => {
     }
 };
 
-/*export const Login = async (req, res) => {
-    try {
-        const { email, password } = req.body
-        const user = await userSchema.findOne({ email })
-        if (!user) {
-            return res.status(400).json({
-                success: false,
-                message: "register fast then login"
-            })
-        }
-        const passwords = await bcrypt.compare(password, user.password)
-        if (!passwords) {
-            return res.status(400).json({
-                success: false,
-                message: "wrong password"
-            })
-        } if (passwords && user.isVarifyed === true) {
-
-            await scissonSchema.create({ userId: user._id })
-
-            const accessToken = jwt.sign({ _id: user.id }, process.env.secretKey, { expiresIn: "5h" })
-            const refreshToken = jwt.sign({ _id: user.id }, process.env.secretKey, { expiresIn: "5h" })
-            user.isLoged = true
-            await user.save()
-
-            return res.status(200).json({
-                success: true,
-                message: "login successfuly",
-                accessToken: accessToken,
-                refreshToken: refreshToken,
-                user
-            })
-        } else {
-            return res.status(400).json({
-                success: false,
-                message: "varify token fast"
-            })
-        }
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        })
-    }
-}*/
-
 export const Logout = async (req, res) => {
-    try {
-        const existing = await scissonSchema.findOne({ userId: req.userId });
-        const user = await userSchema.findById({ _id: req.userId });
-        if (existing) {
-            await scissonSchema.findOneAndDelete({ userId: req.userId });
-            user.isLoged = false;
-            await user.save()
-            return res.status(200).json({
-                success: true,
-                message: "Session successfully ended",
-            });
-        } else {
-            return res.status(404).json({
-                success: false,
-                message: "User had no session",
-            });
-        }
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: error.message
-        })
+  try {
+    const userId = req.userId; // ✅ ঠিক করা
+
+    // ✅ Clear cookies (login এর সাথে MATCH করা জরুরি)
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+    });
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+    });
+
+    if (userId) {
+      await userSchema.findByIdAndUpdate(userId, {
+        isLoged: false,
+      });
     }
-}
+
+    return res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
+
+
+
+// export const Logout = async (req, res) => {
+//     try {
+//         const existing = await scissonSchema.findOne({ userId: req.userId });
+//         const user = await userSchema.findById({ _id: req.userId });
+//         if (existing) {
+//             await scissonSchema.findOneAndDelete({ userId: req.userId });
+//             user.isLoged = false;
+//             await user.save()
+//             return res.status(200).json({
+//                 success: true,
+//                 message: "Session successfully ended",
+//             });
+//         } else {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "User had no session",
+//             });
+//         }
+//     } catch (error) {
+//         return res.status(500).json({
+//             success: false,
+//             message: error.message
+//         })
+//     }
+// }
 
 
 export const forgotPassword = async (req, res) => {
@@ -238,3 +232,58 @@ export const resetPassword = async (req, res) => {
 
     res.json({ message: "Password reset successful" });
 };
+
+
+export const updateProfile = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const profileImage = req.files?.profileImage
+      ? `/upload/profile/${req.files.profileImage[0].filename}`
+      : "";
+
+    const coverImage = req.files?.coverImage
+      ? `/upload/profile/${req.files.coverImage[0].filename}`
+      : "";
+
+    const updatedUser = await userSchema.findByIdAndUpdate(
+      userId,
+      {
+        ...req.body,
+        profileImage,
+        coverImage,
+        name: `${req.body.firstName} ${req.body.lastName}`,
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      user: updatedUser,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+
+
+// ================= GET PROFILE =================
+export const getProfile = async (req, res) => {
+  try {
+    const user = await userSchema.findById(req.userId).select("-password");
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+

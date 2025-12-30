@@ -28,7 +28,7 @@ export function Login() {
           JSON.stringify(response.data.user)
         );
 
-        navigate("/navbar");
+        navigate("/dashboard");
       }
     } catch (error) {
       alert(error.response?.data?.message || error.message);

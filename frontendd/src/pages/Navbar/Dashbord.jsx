@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { Link, Outlet } from "react-router-dom";
 
-export default function Home() {
+export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -40,32 +41,71 @@ export default function Home() {
 
         {/* Navigation */}
         <nav className="mt-6 px-2 space-y-2">
-          {["Post", "Show All Post", "About", "Contact"].map((item) => (
-            <a
-              key={item}
-              href="#"
-              className="block px-4 py-2.5 rounded-lg text-sm font-medium
-              text-gray-300 hover:bg-gray-700 hover:text-white"
-              onClick={() => setOpen(false)}
-            >
-              {item}
-            </a>
-          ))}
+          {/* 🔥 HOME */}
+          <Link
+            to=""
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 rounded-lg text-sm font-medium
+            text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            🏠 Home
+          </Link>
+
+          <Link
+            to="post"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 rounded-lg text-sm font-medium
+            text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            ➕ Post
+          </Link>
+
+          <Link
+            to="postdata"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 rounded-lg text-sm font-medium
+            text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            📄 Show All Post
+          </Link>
+
+          <Link
+            to="about"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 rounded-lg text-sm font-medium
+            text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            ℹ️ About
+          </Link>
+
+          <Link
+            to="contact"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 rounded-lg text-sm font-medium
+            text-gray-300 hover:bg-gray-700 hover:text-white"
+          >
+            📞 Contact
+          </Link>
         </nav>
 
         {/* User Profile */}
         <div className="mt-auto p-4 border-t border-gray-800">
-          <div className="flex items-center p-2 rounded-lg hover:bg-gray-800 cursor-pointer">
+          <div className="flex items-center p-2 rounded-lg hover:bg-gray-800">
             <img
               className="h-8 w-8 rounded-full"
-              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&w=256&h=256&q=80"
+              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e"
               alt="Profile"
             />
             <div className="ml-3">
               <p className="text-sm font-medium text-white">
                 {user?.name || "User"}
               </p>
-              <p className="text-xs text-gray-400">View profile</p>
+              <Link
+                to="profile"
+                className="text-xs text-gray-400 hover:underline"
+              >
+                View profile
+              </Link>
             </div>
           </div>
         </div>
@@ -93,17 +133,9 @@ export default function Home() {
           <h1 className="ml-4 text-lg font-semibold">Dashboard</h1>
         </header>
 
-        {/* Page Content */}
-        <main className="flex-1 p-6 bg-gray-100">
-          <h1 className="hidden md:block text-2xl font-semibold text-gray-900">
-            Dashboard
-          </h1>
-
-          <div className="mt-4 p-6 bg-white rounded-lg shadow">
-            <p className="text-gray-600">
-              Welcome {user?.name || "User"} 👋
-            </p>
-          </div>
+        {/* 🔥 Dashboard Content */}
+        <main className="flex-1 p-6 bg-gray-100 overflow-y-auto">
+          <Outlet />
         </main>
       </div>
     </div>

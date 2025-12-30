@@ -1,152 +1,149 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import EditProfile from "./EditProfile";
+import { useNavigate } from "react-router-dom";
 
-export const MyProfile = () => {
+const MyProfile = () => {
+  const [profile, setProfile] = useState(null);
+  const [openEdit, setOpenEdit] = useState(false);
+  const navigate = useNavigate();
+
+  // ================= FETCH PROFILE =================
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:8003/user/profile",
+        { withCredentials: true }
+      );
+      setProfile(res.data.user);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  // ================= IMAGE UPLOAD =================
+  const handleImageChange = async (e, key) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append(key, file);
+
+    try {
+      await axios.put(
+        "http://localhost:8003/user/profile",
+        formData,
+        { withCredentials: true }
+      );
+      fetchProfile();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // ================= LOGOUT =================
+  const handleLogout = () => {
+    navigate("/dashboard/logout");
+  };
+
+  if (!profile) return <p className="p-6">Loading...</p>;
+
   return (
-    <>
-    <section className="py-10 my-auto dark:bg-gray-900">
-  <div className="lg:w-[80%] md:w-[90%] w-[96%] mx-auto flex gap-4">
-    <div className="lg:w-[88%] sm:w-[88%] w-full mx-auto shadow-2xl p-4 rounded-xl h-fit self-center dark:bg-gray-800/40">
-      {/*  */}
-      <div className="">
-        <h1 className="lg:text-3xl md:text-2xl text-xl font-serif font-extrabold mb-2 dark:text-white">
-          Profile
-        </h1>
-        <h2 className="text-grey text-sm mb-4 dark:text-gray-400">
-          Create Profile
-        </h2>
-        <form>
-          {/* Cover Image */}
-          <div className="w-full rounded-sm bg-[url('https://images.unsplash.com/photo-1449844908441-8829872d2607?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw2fHxob21lfGVufDB8MHx8fDE3MTA0MDE1NDZ8MA&ixlib=rb-4.0.3&q=80&w=1080')] bg-cover bg-center bg-no-repeat items-center">
-            {/* Profile Image */}
-            <div className="mx-auto flex justify-center w-[141px] h-[141px] bg-blue-300/20 rounded-full bg-[url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0NzEyNjZ8MHwxfHNlYXJjaHw4fHxwcm9maWxlfGVufDB8MHx8fDE3MTEwMDM0MjN8MA&ixlib=rb-4.0.3&q=80&w=1080')] bg-cover bg-center bg-no-repeat">
-              <div className="bg-white/90 rounded-full w-6 h-6 text-center ml-28 mt-4">
-                <input
-                  type="file"
-                  name="profile"
-                  id="upload_profile"
-                  hidden=""
-                  required=""
-                />
-                <label htmlFor="upload_profile">
-                  <svg
-                    data-slot="icon"
-                    className="w-6 h-5 text-blue-700"
-                    fill="none"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
-                    ></path>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
-                    ></path>
-                  </svg>
-                </label>
-              </div>
-            </div>
-            <div className="flex justify-end">
-              {/*  */}
+    <section className="bg-[#f0f2f5] min-h-screen">
+      {/* ================= COVER ================= */}
+      <div
+        className="relative h-[320px] bg-gray-300 bg-cover bg-center"
+        style={{
+          backgroundImage: profile.coverImage
+            ? `url(http://localhost:8003${profile.coverImage})`
+            : "none",
+        }}
+      >
+        <label className="absolute right-6 bottom-6 bg-white px-4 py-2 rounded-lg shadow cursor-pointer text-sm font-semibold">
+          ✏️ Edit Cover
+          <input
+            type="file"
+            hidden
+            onChange={(e) => handleImageChange(e, "coverImage")}
+          />
+        </label>
+      </div>
+
+      {/* ================= PROFILE CARD ================= */}
+      <div className="max-w-6xl mx-auto px-6">
+        <div className="relative bg-white rounded-xl shadow -mt-24 p-6 flex flex-col md:flex-row gap-6 items-center md:items-end">
+          
+          {/* PROFILE IMAGE */}
+          <div className="relative">
+            <img
+              src={
+                profile.profileImage
+                  ? `http://localhost:8003${profile.profileImage}`
+                  : "/avatar.png"
+              }
+              className="w-44 h-44 rounded-full border-4 border-white object-cover"
+            />
+            <label className="absolute bottom-2 right-2 bg-gray-100 p-2 rounded-full shadow cursor-pointer">
+              📷
               <input
                 type="file"
-                name="profile"
-                id="upload_cover"
-                hidden=""
-                required=""
+                hidden
+                onChange={(e) => handleImageChange(e, "profileImage")}
               />
-              <div className="bg-white flex items-center gap-1 rounded-tl-md px-2 text-center font-semibold">
-                <label
-                  htmlFor="upload_cover"
-                  className="inline-flex items-center gap-1 cursor-pointer"
-                >
-                  Cover
-                  <svg
-                    data-slot="icon"
-                    className="w-6 h-5 text-blue-700"
-                    fill="none"
-                    strokeWidth="1.5"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
-                    ></path>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
-                    ></path>
-                  </svg>
-                </label>
-              </div>
-            </div>
+            </label>
           </div>
-          <h2 className="text-center mt-1 font-semibold dark:text-gray-300">
-            Upload Profile and Cover Image
-          </h2>
-          <div className="flex flex-col lg:flex-row gap-2 justify-center w-full">
-            <div className="w-full  mb-4 mt-6">
-              <label htmlFor="" className="mb-2 dark:text-gray-300">
-                First Name
-              </label>
-              <input
-                type="text"
-                className="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
-                placeholder="First Name"
-              />
-            </div>
-            <div className="w-full  mb-4 lg:mt-6">
-              <label htmlFor="" className=" dark:text-gray-300">
-                Last Name
-              </label>
-              <input
-                type="text"
-                className="mt-2 p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
-                placeholder="Last Name"
-              />
-            </div>
+
+          {/* NAME & BIO */}
+          <div className="flex-1 text-center md:text-left">
+            <h1 className="text-3xl font-bold text-gray-900">
+              {profile.firstName} {profile.lastName}
+            </h1>
+            <p className="text-gray-600 mt-1">{profile.bio || "No bio yet"}</p>
           </div>
-          <div className="flex flex-col lg:flex-row  gap-2 justify-center w-full">
-            <div className="w-full">
-              <h3 className="dark:text-gray-300 mb-2">Sex</h3>
-              <select className="w-full text-grey border-2 rounded-lg p-4 pl-2 pr-2 dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800">
-                <option disabled="" value="">
-                  Select Sex
-                </option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-            </div>
-            <div className="w-full">
-              <h3 className="dark:text-gray-300 mb-2">Date Of Birth</h3>
-              <input
-                type="date"
-                className="text-grey p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 dark:bg-gray-800"
-              />
-            </div>
-          </div>
-          <div className="w-full rounded-lg bg-blue-500 mt-4 text-white text-lg font-semibold">
-            <button type="submit" className="w-full p-4">
-              Submit
+
+          {/* ACTION BUTTONS */}
+          <div className="flex gap-3">
+            <button
+              onClick={() => setOpenEdit(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold"
+            >
+              Edit Profile
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="bg-gray-200 hover:bg-gray-300 px-5 py-2 rounded-lg font-semibold"
+            >
+              Logout
             </button>
           </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</section>
+        </div>
 
-    </>
-  )
-}
+        {/* ================= DETAILS ================= */}
+        <div className="bg-white rounded-xl shadow mt-6 p-6 max-w-2xl">
+          <h2 className="text-xl font-bold mb-4">About</h2>
+
+          <div className="space-y-2 text-gray-700">
+            <p>🎂 <span className="font-semibold">DOB:</span> {profile.dob || "Not set"}</p>
+            <p>🚻 <span className="font-semibold">Gender:</span> {profile.gender || "Not set"}</p>
+            <p>📧 <span className="font-semibold">Email:</span> {profile.email}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* ================= EDIT MODAL ================= */}
+      <EditProfile
+        isOpen={openEdit}
+        onClose={() => setOpenEdit(false)}
+        profile={profile}
+        refreshProfile={fetchProfile}
+      />
+    </section>
+  );
+};
+
+export default MyProfile;
