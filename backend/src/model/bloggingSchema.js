@@ -10,14 +10,30 @@ const bloggingSchema = new mongoose.Schema({
     }, photo: {
         type: String,
         required: true
-    }, createdAtAt: {
-        type: Date,
-        default: Date.now()
     }, userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "userSchema",
+        ref: "user",
         required: true
     },
+    likes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "user"
+        }
+    ],
+
+    comments: [
+        {
+            userId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "user"
+            },
+            text:{  type:String,
+            required: true,},
+            createdAt: { type: Date, default: Date.now }
+        }
+    ]
+
 }, { timestamps: true })
 
 export default mongoose.model("dlogging", bloggingSchema)

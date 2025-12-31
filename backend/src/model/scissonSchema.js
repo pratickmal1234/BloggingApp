@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const scissonSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "userSchema",
+        ref: "user",
         required: true,
     }, issuedAt: {
         type: Date,

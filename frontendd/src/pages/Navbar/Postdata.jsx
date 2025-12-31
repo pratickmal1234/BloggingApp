@@ -1,8 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-// 🕒 time ago helper
+// 🕒 time ago
 const timeAgo = (date) => {
+  if (!date) return "Just now";
+
   const seconds = Math.floor((new Date() - new Date(date)) / 1000);
   const intervals = [
     { label: "year", seconds: 31536000 },
@@ -14,176 +16,174 @@ const timeAgo = (date) => {
 
   for (let i of intervals) {
     const count = Math.floor(seconds / i.seconds);
-    if (count > 0) return `${count} ${i.label}${count > 1 ? "s" : ""} ago`;
+    if (count > 0) {
+      return `${count} ${i.label}${count > 1 ? "s" : ""} ago`;
+    }
   }
   return "Just now";
 };
 
 export default function Postdata() {
-  const [posts, setPosts] = useState([]);
-  const [editPost, setEditPost] = useState(null);
-  const [editTitle, setEditTitle] = useState("");
-  const [editText, setEditText] = useState("");
+  const [posts, setPosts] = useState({});
+  const [commentText, setCommentText] = useState({});
+  const [openComments, setOpenComments] = useState({}); // 🔥 NEW
 
-  // 🔑 logged in user
-  const loggedUser = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user"));
 
-  // 🔄 fetch posts
+  // 🔄 FETCH POSTS
   const fetchPosts = async () => {
-    const res = await axios.get(
-      "http://localhost:8003/blog/getAll",
-      { withCredentials: true }
-    );
-    setPosts(res.data.allPost || []);
+    try {
+      const res = await axios.get(
+        "http://localhost:8003/blog/getall",
+        { withCredentials: true }
+      );
+
+      const map = {};
+      res.data.allPost.forEach((p) => (map[p._id] = p));
+      setPosts(map);
+    } catch (err) {
+      console.error("FETCH POST ERROR 👉", err);
+    }
   };
 
   useEffect(() => {
     fetchPosts();
   }, []);
 
-  // 🔐 owner check
-  const isOwner = (postUserId) => {
-    return loggedUser?._id === postUserId;
-  };
-
-  // 🗑 delete
-  const handleDelete = async (id) => {
-    if (!window.confirm("Delete this post?")) return;
-
-    await axios.delete(
-      `http://localhost:8003/blog/delete/${id}`,
+const handleLike = async (id) => {
+  try {
+    const res = await axios.put(
+      `http://localhost:8003/blog/like/${id}`,
+      {},
       { withCredentials: true }
     );
 
-    setPosts(posts.filter((p) => p._id !== id));
-  };
-
-  // ✏️ save edit
-  const handleEditSave = async () => {
-    await axios.put(
-      `http://localhost:8003/blog/update/${editPost._id}`,
-      {
-        title: editTitle,
-        contain: editText,
+    setPosts((prev) => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        likes: res.data.likes,
       },
-      { withCredentials: true }
-    );
+    }));
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-    setPosts((prev) =>
-      prev.map((p) =>
-        p._id === editPost._id
-          ? { ...p, title: editTitle, contain: editText }
-          : p
-      )
-    );
 
-    setEditPost(null);
+  // 💬 COMMENT
+  const handleComment = async (id) => {
+    if (!commentText[id]) return;
+
+    try {
+      const res = await axios.post(
+        `http://localhost:8003/blog/comment/${id}`,
+        { text: commentText[id] },
+        { withCredentials: true }
+      );
+
+      setPosts((prev) => ({
+        ...prev,
+        [id]: {
+          ...prev[id],
+          comments: res.data.comments,
+        },
+      }));
+
+      setCommentText((prev) => ({ ...prev, [id]: "" }));
+      setOpenComments((prev) => ({ ...prev, [id]: true }));
+    } catch (err) {
+      console.error("COMMENT ERROR 👉", err);
+    }
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">All Posts 📝</h1>
+    <div className="max-w-7xl mx-auto px-4">
+      <h1 className="text-3xl font-bold mb-6">All Posts</h1>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Object.values(posts).map((post) => (
           <div
             key={post._id}
-            className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden"
+            className="bg-white rounded-xl shadow overflow-hidden flex flex-col"
           >
             {post.photo && (
               <img
                 src={post.photo}
                 alt="post"
-                className="w-full h-48 object-cover"
+                className="w-full h-52 object-cover"
               />
             )}
 
-            <div className="p-4">
-              {/* 🔹 TITLE */}
-              <h2 className="text-lg font-bold mb-1">
-                {post.title}
-              </h2>
+            <div className="p-4 flex-1 flex flex-col">
+              <h2 className="font-bold text-lg">{post.title}</h2>
+              <p className="text-sm text-gray-700 mt-1">{post.contain}</p>
 
-              {/* 🔹 CONTENT */}
-              <p className="text-gray-700 text-sm mb-2">
-                {post.contain}
-              </p>
-
-              <p className="text-xs text-gray-400 mb-3">
+              <p className="text-xs text-gray-400 mt-2">
                 {timeAgo(post.createdAt)}
               </p>
 
-              <div className="flex justify-between items-center text-sm">
-                <span>❤️ {post.likes || 0}</span>
+              {/* LIKE + COMMENT BAR */}
+              <div className="flex justify-between border-t mt-3 pt-2 text-sm">
+                <button
+                  onClick={() => handleLike(post._id)}
+                  className="hover:text-red-500"
+                >
+                  ❤️ Like ({post.likes.length})
+                </button>
 
-                {/* 🔐 ONLY OWNER */}
-                {isOwner(post.userId) && (
-                  <div className="flex gap-3">
-                    <button
-                      onClick={() => {
-                        setEditPost(post);
-                        setEditTitle(post.title);
-                        setEditText(post.contain);
-                      }}
-                      className="text-blue-600"
-                    >
-                      ✏️ Edit
-                    </button>
-
-                    <button
-                      onClick={() => handleDelete(post._id)}
-                      className="text-red-500"
-                    >
-                      🗑 Delete
-                    </button>
-                  </div>
-                )}
+                <button
+                  onClick={() =>
+                    setOpenComments((prev) => ({
+                      ...prev,
+                      [post._id]: !prev[post._id],
+                    }))
+                  }
+                  className="hover:text-blue-600"
+                >
+                  💬 {post.comments.length} Comments
+                </button>
               </div>
+
+              {/* COMMENT INPUT */}
+              <div className="mt-3">
+                <input
+                  type="text"
+                  placeholder="Write a comment..."
+                  value={commentText[post._id] || ""}
+                  onChange={(e) =>
+                    setCommentText({
+                      ...commentText,
+                      [post._id]: e.target.value,
+                    })
+                  }
+                  className="w-full border rounded px-3 py-2 text-sm"
+                />
+                <button
+                  onClick={() => handleComment(post._id)}
+                  className="mt-2 w-full bg-blue-600 text-white py-1 rounded text-sm"
+                >
+                  Comment
+                </button>
+              </div>
+
+              {/* COMMENTS (FACEBOOK STYLE) */}
+              {openComments[post._id] && (
+                <div className="mt-3 max-h-40 overflow-y-auto space-y-2 border-t pt-2">
+                  {post.comments.map((c, i) => (
+                    <div
+                      key={i}
+                      className="bg-gray-100 px-3 py-2 rounded text-sm"
+                    >
+                      {c.text}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         ))}
       </div>
-
-      {/* ✏️ Edit Modal */}
-      {editPost && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Edit Post</h2>
-
-            {/* Title */}
-            <input
-              type="text"
-              className="w-full border rounded-lg p-3 mb-3"
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-              placeholder="Post title"
-            />
-
-            {/* Content */}
-            <textarea
-              className="w-full border rounded-lg p-3"
-              rows="4"
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
-            />
-
-            <div className="flex justify-end gap-3 mt-4">
-              <button
-                onClick={() => setEditPost(null)}
-                className="px-4 py-2 bg-gray-200 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleEditSave}
-                className="px-4 py-2 bg-blue-600 text-white rounded"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

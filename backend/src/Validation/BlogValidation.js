@@ -6,7 +6,7 @@ export const TaskValidateSchema = yup.object({
         .trim()
         .min(3, "title must be atleast 3 characters")
         .required(),
-    description: yup
+    contain: yup
         .string()
         .trim()
         .min(10, "description must be atleast 10 characters ")
