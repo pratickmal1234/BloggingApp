@@ -6,8 +6,8 @@ import userSchema from "../model/userSchema.js";
 export const verifyUser = async (req, res, next) => { 
     try {
         const token = req.cookies.accessToken;
-        console.log("cookies",req.cookies);
-        console.log("accesscookies",req.cookies.accessToken);
+        // console.log("cookies",req.cookies);
+        // console.log("accesscookies",req.cookies.accessToken);
 
         
         // console.log(token);
@@ -18,7 +18,7 @@ export const verifyUser = async (req, res, next) => {
 
     
         req.userId = decoded._id;
-        console.log("id",req.userId);
+        // console.log("id",req.userId);
         
 
         next();

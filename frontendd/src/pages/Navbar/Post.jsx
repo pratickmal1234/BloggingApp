@@ -4,15 +4,17 @@ import EmojiPicker from "emoji-picker-react";
 import { useNavigate } from "react-router-dom";
 
 export function Post() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [photo, setPhoto] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showEmoji, setShowEmoji] = useState(false);
-
   const [myPosts, setMyPosts] = useState([]);
+
+  // 🔥 toggle comments per post
+  const [openComments, setOpenComments] = useState({});
 
   // ================= FETCH USER POSTS =================
   const fetchMyPosts = async () => {
@@ -80,32 +82,11 @@ export function Post() {
     return `http://localhost:8003${path}`;
   };
 
-  // ================= DELETE POST =================
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this post?")) return;
-
-    try {
-      await axios.delete(
-        `http://localhost:8003/blog/delete/${id}`,
-        { withCredentials: true }
-      );
-      fetchMyPosts();
-    } catch (err) {
-      alert("Delete failed");
-    }
-  };
-
-  // ================= EDIT POST (later expand) =================
-  const handleEdit = (post) => {
-    alert("Edit feature ready, backend থাকলে modal / page খুলবে 🙂");
-    console.log(post);
-  };
-
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto px-4 space-y-8">
 
       {/* ================= CREATE POST ================= */}
-      <div className="bg-white rounded-xl shadow p-6">
+      <div className="bg-white rounded-xl shadow p-6 max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-4">Create Post</h1>
 
         <form onSubmit={handledata} className="space-y-4">
@@ -181,50 +162,86 @@ export function Post() {
         </form>
       </div>
 
-      {/* ================= MY POSTS ================= */}
+      {/* ================= MY POSTS (3 PER ROW) ================= */}
       {myPosts.length === 0 && (
         <p className="text-center text-gray-500">No posts yet</p>
       )}
 
-      {myPosts.map((post) => (
-        <div key={post._id} className="bg-white rounded-xl shadow p-4">
-          <h2 className="font-bold text-lg">{post.title}</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {myPosts.map((post) => (
+          <div key={post._id} className="bg-white rounded-xl shadow p-4 flex flex-col">
+            <h2 className="font-bold text-lg">{post.title}</h2>
 
-          <p className="text-gray-700 mt-2 whitespace-pre-line">
-            {post.contain}
-          </p>
+            <p className="text-gray-700 mt-2 whitespace-pre-line">
+              {post.contain}
+            </p>
 
-          {post.photo && (
-            <img
-              src={getImageUrl(post.photo)}
-              alt="post"
-              className="mt-3 rounded-lg max-h-80 w-full object-cover"
-            />
-          )}
-          {/* 🔥 NEW BUTTONS */}
-          <div className="flex gap-3 mt-4">
-            <button
-              onClick={() =>
-                navigate(`/dashboard/edit-post/${post._id}`)
-              }
-              className="px-4 py-1 bg-yellow-400 rounded"
-            >
-              Edit
-            </button>
+            {post.photo && (
+              <img
+                src={getImageUrl(post.photo)}
+                alt="post"
+                className="mt-3 rounded-lg max-h-64 w-full object-cover"
+              />
+            )}
 
-            <button
-              onClick={() => navigate(`/dashboard/delete-post/${post._id}`)}
-              className="px-4 py-1 rounded bg-red-500 text-white"
-            >
-              🗑 Delete
-            </button>
+            {/* ❤️ 💬 COUNTS */}
+            <div className="flex justify-between mt-4 text-sm text-gray-600 border-t pt-2">
+              <span>❤️ {post.likes?.length || 0} Likes</span>
+
+              <button
+                onClick={() =>
+                  setOpenComments((prev) => ({
+                    ...prev,
+                    [post._id]: !prev[post._id],
+                  }))
+                }
+                className="hover:text-blue-600"
+              >
+                💬 {post.comments?.length || 0} Comments
+              </button>
+            </div>
+
+            {/* 🔽 COMMENTS LIST */}
+            {openComments[post._id] && (
+              <div className="mt-3 space-y-2 border-t pt-2">
+                {post.comments.length === 0 ? (
+                  <p className="text-sm text-gray-500">No comments yet</p>
+                ) : (
+                  post.comments.map((c, i) => (
+                    <div
+                      key={i}
+                      className="bg-gray-100 px-3 py-2 rounded text-sm"
+                    >
+                      {c.text}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {/* ACTION BUTTONS */}
+            <div className="flex gap-3 mt-auto pt-4">
+              <button
+                onClick={() => navigate(`/dashboard/edit-post/${post._id}`)}
+                className="px-4 py-1 bg-yellow-400 rounded"
+              >
+                Edit
+              </button>
+
+              <button
+                onClick={() => navigate(`/dashboard/delete-post/${post._id}`)}
+                className="px-4 py-1 rounded bg-red-500 text-white"
+              >
+                🗑 Delete
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-500 mt-2">
+              {new Date(post.createdAt).toLocaleString()}
+            </p>
           </div>
-
-          <p className="text-sm text-gray-500 mt-2">
-            {new Date(post.createdAt).toLocaleString()}
-          </p>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

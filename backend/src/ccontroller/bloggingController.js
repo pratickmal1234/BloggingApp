@@ -131,41 +131,46 @@ export const DeletePost = async (req, res) => {
 
 import mongoose from "mongoose";
 
-
-
-// ❤️ LIKE / UNLIKE (ANY USER → ANY POST)
 export const likePost = async (req, res) => {
   try {
-    const post = await bloggingSchema.findById(req.params.id);
+    const postId = req.params.id;
+    const userId = new mongoose.Types.ObjectId(req.userId);
+
+    const post = await bloggingSchema.findById(postId);
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    const userId = req.userId.toString();
+    const alreadyLiked = post.likes.some(id => id.equals(userId));
 
-    const index = post.likes.findIndex(
-      (id) => id.toString() === userId
-    );
-
-    if (index === -1) {
-      post.likes.push(userId);
+    if (alreadyLiked) {
+      // UNLIKE
+      await bloggingSchema.updateOne(
+        { _id: postId },
+        { $pull: { likes: userId } }
+      );
     } else {
-      post.likes.splice(index, 1);
+      // LIKE
+      await bloggingSchema.updateOne(
+        { _id: postId },
+        { $addToSet: { likes: userId } }
+      );
     }
 
-    await post.save();
+    const updatedPost = await bloggingSchema.findById(postId);
 
     res.status(200).json({
-      liked: index === -1,
-      likes: post.likes,
+      liked: !alreadyLiked,
+      likes: updatedPost.likes,
     });
+
   } catch (err) {
     console.log("LIKE ERROR 👉", err);
     res.status(500).json({ message: err.message });
   }
 };
 
-// 💬 COMMENT (ANY USER → ANY POST)
+// 💬 COMMENT
 export const addComment = async (req, res) => {
   try {
     const { text } = req.body;
@@ -173,26 +178,34 @@ export const addComment = async (req, res) => {
       return res.status(400).json({ message: "Empty comment" });
     }
 
-    const post = await bloggingSchema.findById(req.params.id);
-    if (!post) {
+    const updatedPost = await bloggingSchema.findByIdAndUpdate(
+      req.params.id,
+      {
+        $push: {
+          comments: {
+            userId: req.userId,
+            text,
+          },
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedPost) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    post.comments.push({
-      userId: req.userId,
-      text,
-    });
-
-    await post.save();
-
     res.status(200).json({
-      comments: post.comments,
+      comments: updatedPost.comments,
     });
   } catch (err) {
     console.log("COMMENT ERROR 👉", err);
     res.status(500).json({ message: err.message });
   }
 };
+
+
+
 
 
 
