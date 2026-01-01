@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import EmojiPicker from "emoji-picker-react";
 
 const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,8 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
     dob: profile.dob || "",
     gender: profile.gender || "",
   });
+
+  const [showEmoji, setShowEmoji] = useState(false);
 
   if (!isOpen) return null;
 
@@ -30,9 +33,17 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
     }
   };
 
+  // ✅ Emoji click handler
+  const handleEmojiClick = (emojiData) => {
+    setFormData({
+      ...formData,
+      bio: formData.bio + emojiData.emoji,
+    });
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white w-[400px] p-6 rounded-xl">
+      <div className="bg-white w-[400px] p-6 rounded-xl relative">
         <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -54,14 +65,36 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
             }
           />
 
-          <textarea
-            className="w-full border p-2 rounded"
-            placeholder="Bio"
-            value={formData.bio}
-            onChange={(e) =>
-              setFormData({ ...formData, bio: e.target.value })
-            }
-          />
+          {/* ✅ BIO WITH EMOJI */}
+          <div className="relative">
+            <textarea
+              className="w-full border p-2 rounded pr-10"
+              placeholder="Bio"
+              value={formData.bio}
+              onChange={(e) =>
+                setFormData({ ...formData, bio: e.target.value })
+              }
+            />
+
+            {/* Emoji Button */}
+            <button
+              type="button"
+              onClick={() => setShowEmoji(!showEmoji)}
+              className="absolute right-2 bottom-2 text-xl"
+            >
+              😊
+            </button>
+
+            {/* Emoji Picker */}
+            {showEmoji && (
+              <div className="absolute bottom-12 right-0 z-50">
+                <EmojiPicker
+                  onEmojiClick={handleEmojiClick}
+                  height={350}
+                />
+              </div>
+            )}
+          </div>
 
           <input
             type="date"

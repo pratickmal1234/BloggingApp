@@ -234,17 +234,20 @@ export const resetPassword = async (req, res) => {
 };
 
 
+
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.userId;
 
+    const user = await userSchema.findById(userId);
+
     const profileImage = req.files?.profileImage
-      ? `/upload/profile/${req.files.profileImage[0].filename}`
-      : "";
+      ? `/upload/${req.files.profileImage[0].filename}`
+      : user.profileImage;
 
     const coverImage = req.files?.coverImage
-      ? `/upload/profile/${req.files.coverImage[0].filename}`
-      : "";
+      ? `/upload/${req.files.coverImage[0].filename}`
+      : user.coverImage;
 
     const updatedUser = await userSchema.findByIdAndUpdate(
       userId,
@@ -252,7 +255,6 @@ export const updateProfile = async (req, res) => {
         ...req.body,
         profileImage,
         coverImage,
-        name: `${req.body.firstName} ${req.body.lastName}`,
       },
       { new: true }
     );
@@ -265,6 +267,9 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+
 
 
 

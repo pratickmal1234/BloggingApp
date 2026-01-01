@@ -16,6 +16,7 @@ const MyProfile = () => {
         { withCredentials: true }
       );
       setProfile(res.data.user);
+       localStorage.setItem("user", JSON.stringify(res.data.user));
     } catch (err) {
       console.log(err);
     }
@@ -55,28 +56,35 @@ const MyProfile = () => {
   return (
     <section className="bg-[#f0f2f5] min-h-screen">
       {/* ================= COVER ================= */}
+      {/* ================= COVER ================= */}
       <div
-        className="relative h-[320px] bg-gray-300 bg-cover bg-center"
+        className="relative h-[320px] bg-gray-300 bg-cover bg-center overflow-hidden"
         style={{
           backgroundImage: profile.coverImage
             ? `url(http://localhost:8003${profile.coverImage})`
             : "none",
         }}
       >
-        <label className="absolute right-6 bottom-6 bg-white px-4 py-2 rounded-lg shadow cursor-pointer text-sm font-semibold">
+        {/* DARK OVERLAY (Facebook-style) */}
+        <div className="absolute inset-0 bg-black/20"></div>
+
+        {/* EDIT COVER BUTTON */}
+        <label className="absolute right-6 bottom-6 z-10 bg-white px-4 py-2 rounded-lg shadow cursor-pointer text-sm font-semibold flex items-center gap-2">
           ✏️ Edit Cover
           <input
             type="file"
             hidden
+            accept="image/*"
             onChange={(e) => handleImageChange(e, "coverImage")}
           />
         </label>
       </div>
 
+
       {/* ================= PROFILE CARD ================= */}
       <div className="max-w-6xl mx-auto px-6">
         <div className="relative bg-white rounded-xl shadow -mt-24 p-6 flex flex-col md:flex-row gap-6 items-center md:items-end">
-          
+
           {/* PROFILE IMAGE */}
           <div className="relative">
             <img
