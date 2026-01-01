@@ -1,16 +1,34 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Footer from "./Footer";
 
 export default function Home() {
   const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 🔹 load logged-in user
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
       setUser(storedUser);
     }
+
+    // 🔹 load last 4 posts
+    fetchPosts();
   }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const res = await axios.get("http://localhost:8003/blog/getall");
+      if (res.data.success) {
+        setPosts(res.data.allPost.slice(0, 4));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="space-y-10">
@@ -19,12 +37,13 @@ export default function Home() {
         <h1 className="text-3xl md:text-4xl font-bold">
           Welcome back, {user?.name || "User"} ✍️
         </h1>
+
         <p className="mt-3 text-blue-100 max-w-2xl">
           Share your thoughts with the world. Create posts, engage with readers,
           and grow your blogging journey from one place.
         </p>
 
-        {/* 🔗 Action Buttons (UNCHANGED LOGIC) */}
+        {/* 🔗 Action Buttons (NO CHANGE) */}
         <div className="mt-6 flex flex-wrap gap-4">
           <button
             onClick={() => navigate("/dashboard/post")}
@@ -42,54 +61,52 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 📊 Blogging Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Total Posts" value="12" icon="📝" />
-        <StatCard title="Total Likes" value="340" icon="❤️" />
-        <StatCard title="Comments" value="89" icon="💬" />
-        <StatCard title="Readers" value="1.2K" icon="👀" />
-      </div>
-
-      {/* 📰 Blog Info */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* About Blogging */}
-        <div className="bg-white rounded-2xl shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-3">
-            🧠 About Your Blog
-          </h2>
-          <p className="text-gray-600 leading-relaxed">
-            This platform helps you publish blogs, upload images, receive likes
-            and comments, and build your online presence. Everything is designed
-            to keep blogging simple and enjoyable.
-          </p>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white rounded-2xl shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            🔔 Recent Activity
-          </h2>
-
-          <ul className="space-y-3 text-gray-600">
-            <li>✍️ You published a new blog post</li>
-            <li>💬 Someone commented on your post</li>
-            <li>❤️ Your post received new likes</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* 🔹 Reusable Stat Card */
-function StatCard({ title, value, icon }) {
-  return (
-    <div className="bg-white rounded-2xl shadow p-5 flex items-center gap-4 hover:shadow-lg transition">
-      <div className="text-3xl">{icon}</div>
+      {/* 📰 Latest Posts */}
       <div>
-        <p className="text-sm text-gray-500">{title}</p>
-        <h3 className="text-2xl font-bold text-gray-800">{value}</h3>
+        <h2 className="text-2xl font-bold text-gray-800 mb-6">
+          📰 Latest Blog Posts
+        </h2>
+
+        {posts.length === 0 ? (
+          <p className="text-gray-500">No posts available</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {posts.map((post) => (
+              <div
+                key={post._id}
+                className="bg-white rounded-2xl shadow hover:shadow-lg transition overflow-hidden"
+              >
+                <img
+                  src={
+                    post.photo.startsWith("http")
+                      ? post.photo
+                      : `http://localhost:8003${post.photo}`
+                  }
+                  alt={post.title}
+                  className="h-44 w-full object-cover"
+                />
+
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg text-gray-800 line-clamp-1">
+                    {post.title}
+                  </h3>
+
+                  <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                    {post.contain}
+                  </p>
+
+                  <div className="mt-3 text-xs text-gray-500 flex justify-between">
+                    <span>❤️ {post.likes.length}</span>
+                    <span>💬 {post.comments.length}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      <Footer />
     </div>
   );
 }

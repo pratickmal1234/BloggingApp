@@ -118,9 +118,23 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
             <option value="Other">Other</option>
           </select>
 
-          <button className="w-full bg-blue-600 text-white py-2 rounded">
-            Save Changes
-          </button>
+          {/* ✅ BUTTONS */}
+          <div className="flex gap-3 pt-2">
+            <button
+              type="submit"
+              className="flex-1 bg-blue-600 text-white py-2 rounded"
+            >
+              Save Changes
+            </button>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 bg-gray-300 text-gray-800 py-2 rounded hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
     </div>

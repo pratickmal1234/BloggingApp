@@ -1,3 +1,5 @@
+import Footer from "./Footer";
+
 export default function About() {
   return (
     <div className="max-w-5xl mx-auto">
@@ -87,6 +89,7 @@ export default function About() {
           and readers.
         </p>
       </div>
+      <Footer />
     </div>
   );
 }

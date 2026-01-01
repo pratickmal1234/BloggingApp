@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import Footer from "../Footer";
 
 // 🕒 time ago
 const timeAgo = (date) => {
@@ -224,6 +225,7 @@ export default function Postdata() {
           </div>
         ))}
       </div>
+      <Footer />
     </div>
   );
 }

@@ -15,6 +15,7 @@ import  Home  from "./pages/Home.jsx";
 import { Logout } from "./pages/Logout.jsx";
 import EditPost from "./pages/EditPost.jsx";
 import DeletePost from "./pages/DeletePost.jsx";
+import VerifyEmail from "./pages/VerifyEmail.jsx";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Register />} />
         <Route path="/login" element={<Login />} />
+         <Route path="/verifyemail" element={<VerifyEmail />} />
         <Route path="/forget" element={<ForgetPassword />} />
         
 

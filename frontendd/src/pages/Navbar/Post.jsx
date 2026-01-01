@@ -2,6 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import EmojiPicker from "emoji-picker-react";
 import { useNavigate } from "react-router-dom";
+import Footer from "../Footer";
 
 export function Post() {
   const navigate = useNavigate();
@@ -242,6 +243,7 @@ export function Post() {
           </div>
         ))}
       </div>
+      <Footer />
     </div>
   );
 }
