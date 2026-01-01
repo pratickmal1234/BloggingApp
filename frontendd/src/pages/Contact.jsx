@@ -36,8 +36,8 @@ export default function Contact() {
           </p>
 
           <div className="space-y-4 text-gray-700">
-            <p>📍 Address: Dhaka, Bangladesh</p>
-            <p>📧 Email: support@example.com</p>
+            <p>📍 Address: Howrah, India</p>
+            <p>📧 Email: blogging@152.com</p>
             <p>📱 Phone: +880 1234 567 890</p>
           </div>
         </div>

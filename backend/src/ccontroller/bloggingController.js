@@ -144,13 +144,12 @@ export const likePost = async (req, res) => {
     const alreadyLiked = post.likes.some(id => id.equals(userId));
 
     if (alreadyLiked) {
-      // UNLIKE
       await bloggingSchema.updateOne(
         { _id: postId },
         { $pull: { likes: userId } }
       );
     } else {
-      // LIKE
+
       await bloggingSchema.updateOne(
         { _id: postId },
         { $addToSet: { likes: userId } }
@@ -165,12 +164,11 @@ export const likePost = async (req, res) => {
     });
 
   } catch (err) {
-    console.log("LIKE ERROR 👉", err);
+    console.log("LIKE ERROR ", err);
     res.status(500).json({ message: err.message });
   }
 };
 
-// 💬 COMMENT
 export const addComment = async (req, res) => {
   try {
     const { text } = req.body;
@@ -199,7 +197,7 @@ export const addComment = async (req, res) => {
       comments: updatedPost.comments,
     });
   } catch (err) {
-    console.log("COMMENT ERROR 👉", err);
+    console.log("COMMENT ERROR ", err);
     res.status(500).json({ message: err.message });
   }
 };

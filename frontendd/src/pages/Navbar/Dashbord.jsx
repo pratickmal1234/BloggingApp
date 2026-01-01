@@ -46,7 +46,7 @@ export default function Dashboard() {
             alt="Logo"
             className="h-8 w-auto"
           />
-          <span className="text-xl font-bold">Admin Pro</span>
+          <span className="text-xl font-bold">Blogging App</span>
         </div>
 
         {/* NAV */}

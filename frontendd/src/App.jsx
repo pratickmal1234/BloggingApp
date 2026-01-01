@@ -1,11 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import { VerifyOtp } from "./pages/VerifyOtp.jsx";
-import { GenetarePassword } from "./pages/GenetarePassword.jsx";
 import { Login } from "./pages/Login.jsx";
 import { Register } from "./pages/Register.jsx";
 import ForgetPassword from "./pages/ForgetPassword.jsx";
-import VerifyEmail from "./pages/VerifyEmail.jsx";
 
 import { Post } from "./pages/Navbar/Post.jsx";
 import Postdata from "./pages/Navbar/Postdata.jsx";
@@ -23,17 +20,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Auth */}
         <Route path="/" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forget" element={<ForgetPassword />} />
-        <Route path="/veryfiotp" element={<VerifyOtp />} />
-        <Route path="/generatepass" element={<GenetarePassword />} />
-        <Route path="/verifyemail" element={<VerifyEmail />} />
+        
 
-        {/* 🔥 DASHBOARD LAYOUT */}
         <Route path="/dashboard" element={<Dashboard />}>
-          <Route index element={<Home />} />   {/* 🔥 HOME */}
+          <Route index element={<Home />} /> 
           <Route path="post" element={<Post />} />
           <Route path="postdata" element={<Postdata />} />
           <Route path="about" element={<About />} />

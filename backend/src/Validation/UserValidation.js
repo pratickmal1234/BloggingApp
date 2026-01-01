@@ -2,7 +2,6 @@
 
 import * as yup from "yup";
 
-/* ================= REGISTER ================= */
 export const registerSchema = yup.object({
   name: yup
     .string()
@@ -22,7 +21,6 @@ export const registerSchema = yup.object({
 });
 
 
-/* ================= LOGIN ================= */
 export const loginSchema = yup.object({
   email: yup
     .string()
@@ -35,7 +33,6 @@ export const loginSchema = yup.object({
 });
 
 
-/* ================= PROFILE UPDATE ================= */
 export const profileSchema = yup.object({
   firstName: yup
     .string()
@@ -69,7 +66,7 @@ export const profileSchema = yup.object({
 export const validateUser = (schema) => async (req, res, next) => {
   try {
     await schema.validate(req.body, {
-      abortEarly: false, // সব error একসাথে দেখাবে
+      abortEarly: false, 
     });
     next();
   } catch (err) {

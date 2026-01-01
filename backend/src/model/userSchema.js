@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    // 🔐 AUTH INFO
     name: {
       type: String,
       required: true,
@@ -17,7 +16,6 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-    // 🔑 LOGIN STATUS
     token: {
       type: String,
       default: null,
@@ -31,7 +29,6 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    // 🧑 PROFILE INFO (NEW)
     firstName: {
       type: String,
       default: "",
@@ -45,7 +42,7 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
     dob: {
-      type: String, // date চাইলে Date করতে পারো
+      type: String, 
       default: "",
     },
     gender: {
@@ -53,9 +50,8 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
 
-    // 🖼 IMAGES
     profileImage: {
-      type: String, // base64 / cloud url
+      type: String, 
       default: "",
     },
     coverImage: {
