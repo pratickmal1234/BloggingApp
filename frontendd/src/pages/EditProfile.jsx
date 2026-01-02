@@ -1,17 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import EmojiPicker from "emoji-picker-react";
 
 const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
+
   const [formData, setFormData] = useState({
-    firstName: profile.firstName || "",
-    lastName: profile.lastName || "",
-    bio: profile.bio || "",
-    dob: profile.dob || "",
-    gender: profile.gender || "",
+    firstName: "",
+    lastName: "",
+    bio: "",
+    dob: "",
+    gender: "",
   });
 
   const [showEmoji, setShowEmoji] = useState(false);
+
+  // 🔥 IMPORTANT FIX — profile sync
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        firstName: profile.firstName || "",
+        lastName: profile.lastName || "",
+        bio: profile.bio || "",
+        dob: profile.dob || "",
+        gender: profile.gender || "",
+      });
+    }
+  }, [profile]);
 
   if (!isOpen) return null;
 
@@ -28,17 +42,17 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
       refreshProfile();
       onClose();
     } catch (err) {
-      console.log(err);
+      console.log(err.response?.data || err.message);
       alert("Update failed");
     }
   };
 
   // ✅ Emoji click handler
   const handleEmojiClick = (emojiData) => {
-    setFormData({
-      ...formData,
-      bio: formData.bio + emojiData.emoji,
-    });
+    setFormData((prev) => ({
+      ...prev,
+      bio: prev.bio + emojiData.emoji,
+    }));
   };
 
   return (
@@ -47,6 +61,7 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
         <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
 
         <form onSubmit={handleSubmit} className="space-y-3">
+
           <input
             className="w-full border p-2 rounded"
             placeholder="First Name"
@@ -65,7 +80,7 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
             }
           />
 
-          {/* ✅ BIO WITH EMOJI */}
+          {/* BIO WITH EMOJI */}
           <div className="relative">
             <textarea
               className="w-full border p-2 rounded pr-10"
@@ -76,7 +91,6 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
               }
             />
 
-            {/* Emoji Button */}
             <button
               type="button"
               onClick={() => setShowEmoji(!showEmoji)}
@@ -85,13 +99,9 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
               😊
             </button>
 
-            {/* Emoji Picker */}
             {showEmoji && (
               <div className="absolute bottom-12 right-0 z-50">
-                <EmojiPicker
-                  onEmojiClick={handleEmojiClick}
-                  height={350}
-                />
+                <EmojiPicker onEmojiClick={handleEmojiClick} height={350} />
               </div>
             )}
           </div>
@@ -118,7 +128,6 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
             <option value="Other">Other</option>
           </select>
 
-          {/* ✅ BUTTONS */}
           <div className="flex gap-3 pt-2">
             <button
               type="submit"
@@ -130,11 +139,12 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-300 text-gray-800 py-2 rounded hover:bg-gray-400"
+              className="flex-1 bg-gray-300 text-gray-800 py-2 rounded"
             >
               Cancel
             </button>
           </div>
+
         </form>
       </div>
     </div>

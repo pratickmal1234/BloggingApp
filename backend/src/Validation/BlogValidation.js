@@ -15,10 +15,7 @@ export const blogValidateSchema = yup.object({
     .max(5000, "Content cannot exceed 5000 characters")
     .required("Content is required"),
 
-  
-  photo: yup
-    .string()
-    .required("Photo is required"),
+
 });
 
 
