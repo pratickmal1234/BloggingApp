@@ -233,6 +233,7 @@ export const updateProfile = async (req, res) => {
 
     res.status(200).json({
       success: true,
+      message:"update successfuly",
       user: updatedUser,
     });
   } catch (err) {

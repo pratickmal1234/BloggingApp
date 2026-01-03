@@ -47,7 +47,7 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
     }
   };
 
-  // ✅ Emoji click handler
+  
   const handleEmojiClick = (emojiData) => {
     setFormData((prev) => ({
       ...prev,
