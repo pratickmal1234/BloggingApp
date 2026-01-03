@@ -12,7 +12,7 @@ const MyProfile = () => {
   const fetchProfile = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8003/user/profile",
+        "https://bloggingapp-2.onrender.com/user/profile",
         { withCredentials: true }
       );
       setProfile(res.data.user);
@@ -36,7 +36,7 @@ const MyProfile = () => {
 
     try {
       await axios.put(
-        "http://localhost:8003/user/profile",
+        "https://bloggingapp-2.onrender.com/user/profile",
         formData,
         { withCredentials: true }
       );
@@ -61,7 +61,7 @@ const MyProfile = () => {
         className="relative h-[320px] bg-gray-300 bg-cover bg-center overflow-hidden"
         style={{
           backgroundImage: profile.coverImage
-            ? `url(http://localhost:8003${profile.coverImage})`
+            ? `url(https://bloggingapp-2.onrender.com${profile.coverImage})`
             : "none",
         }}
       >
@@ -90,7 +90,7 @@ const MyProfile = () => {
             <img
               src={
                 profile.profileImage
-                  ? `http://localhost:8003${profile.profileImage}`
+                  ? `https://bloggingapp-2.onrender.com${profile.profileImage}`
                   : "/avatar.png"
               }
               className="w-44 h-44 rounded-full border-4 border-white object-cover"

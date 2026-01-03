@@ -21,7 +21,7 @@ export default function Home() {
 
   const fetchPosts = async () => {
     try {
-      const res = await axios.get("http://localhost:8003/blog/getall");
+      const res = await axios.get("https://bloggingapp-2.onrender.com/blog/getall");
       if (res.data.success) {
         setPosts(res.data.allPost.slice(0, 4));
       }
@@ -80,7 +80,7 @@ export default function Home() {
                   src={
                     post.photo.startsWith("http")
                       ? post.photo
-                      : `http://localhost:8003${post.photo}`
+                      : `https://bloggingapp-2.onrender.com${post.photo}`
                   }
                   alt={post.title}
                   className="h-44 w-full object-cover"

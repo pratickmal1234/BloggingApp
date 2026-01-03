@@ -11,7 +11,7 @@ const DeletePost = () => {
     setLoading(true);
     try {
       await axios.delete(
-        `http://localhost:8003/blog/delete/${id}`,
+        `https://bloggingapp-2.onrender.com/blog/delete/${id}`,
         { withCredentials: true }
       );
 

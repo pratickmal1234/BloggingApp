@@ -14,7 +14,7 @@ export default function VerifyEmail() {
         try {
             setLoading(true);
 
-            const res = await axios.post( "http://localhost:8003/user/tokenVerify",{ token } 
+            const res = await axios.post( "https://bloggingapp-2.onrender.com/user/tokenVerify",{ token } 
             );
 
             setMsg(res.data.message);
@@ -41,67 +41,3 @@ export default function VerifyEmail() {
 
 
 
-
-
-
-/*import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import api from "./api.jsx";
-// import api from "../services/api";
-
-export  function VerifyEmail() {
-    const [params] = useSearchParams();
-    const token = params.get("token");
-
-    useEffect(() => {
-        const verifyemail = async () => {
-            try {
-                if (!token) {
-                    alert("Invalid verification link");
-                    return;
-                }
-
-                const res = await api.get(`/user/verify-email?token=${token}`);
-                alert(res.data.message);
-            } catch (error) {
-                alert(
-                    error?.response?.data?.message || "Email verification failed"
-                );
-            }
-        };
-
-        verifyemail();
-    }, [token]);
-
-    return <h2>Verifying your email...</h2>;
-}*/
-
-
-
-
-
-/*import { useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
-import api from "./api.jsx";
-// import api from "../services/api.jsx";
-
-export function VerifyEmail() {
-    const [params] = useSearchParams();
-    const navigate = useNavigate();
-    const token = params.get("token");
-
-    useEffect(() => {
-        if (token) {
-            api.get(`/user/verifyemail?token=${token}`)
-                .then((res) => {
-                    alert(res.data.message);
-                    navigate("/login");
-                })
-                .catch((err) => {
-                    alert(err.response?.data?.message || "Verification failed");
-                });
-        }
-    }, [token]);
-
-    return <h3>Verifying your email...</h3>;
-}*/

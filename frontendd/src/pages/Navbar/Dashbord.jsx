@@ -75,7 +75,7 @@ export default function Dashboard() {
               className="h-8 w-8 rounded-full object-cover"
               src={
                 user?.profileImage
-                  ? `http://localhost:8003${user.profileImage}`
+                  ? `https://bloggingapp-2.onrender.com${user.profileImage}`
                   : "/avatar.png"
               }
               alt="Profile"

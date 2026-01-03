@@ -21,7 +21,7 @@ export function Post() {
   const fetchMyPosts = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:8003/blog/getUser",
+        "https://bloggingapp-2.onrender.com/blog/getUser",
         { withCredentials: true }
       );
       setMyPosts(res.data.allPost || []);
@@ -55,7 +55,7 @@ export function Post() {
     try {
       setLoading(true);
       const res = await axios.post(
-        "http://localhost:8003/blog/post",
+        "https://bloggingapp-2.onrender.com/blog/post",
         formData,
         { withCredentials: true }
       );
@@ -80,7 +80,7 @@ export function Post() {
   const getImageUrl = (path) => {
     if (!path) return "";
     if (path.startsWith("http")) return path;
-    return `http://localhost:8003${path}`;
+    return `https://bloggingapp-2.onrender.com${path}`;
   };
 
   return (

@@ -11,7 +11,7 @@ export function Login() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:8003/user/login",
+        "https://bloggingapp-2.onrender.com/user/login",
         { email, password },
         {
           withCredentials: true,

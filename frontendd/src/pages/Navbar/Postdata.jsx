@@ -37,7 +37,7 @@ export default function Postdata() {
   // 🔄 FETCH POSTS
   const fetchPosts = async () => {
     const res = await axios.get(
-      "http://localhost:8003/blog/getall",
+      "https://bloggingapp-2.onrender.com/blog/getall",
       { withCredentials: true }
     );
     const map = {};
@@ -52,7 +52,7 @@ export default function Postdata() {
   // ❤️ LIKE
   const handleLike = async (id) => {
     const res = await axios.put(
-      `http://localhost:8003/blog/like/${id}`,
+      `https://bloggingapp-2.onrender.com/blog/like/${id}`,
       {},
       { withCredentials: true }
     );
@@ -71,7 +71,7 @@ export default function Postdata() {
     if (!commentText[id]) return;
 
     const res = await axios.post(
-      `http://localhost:8003/blog/comment/${id}`,
+      `https://bloggingapp-2.onrender.com/blog/comment/${id}`,
       { text: commentText[id] },
       { withCredentials: true }
     );

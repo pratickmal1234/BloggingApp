@@ -34,7 +34,7 @@ const EditProfile = ({ isOpen, onClose, profile, refreshProfile }) => {
 
     try {
       await axios.put(
-        "http://localhost:8003/user/profile",
+        "https://bloggingapp-2.onrender.com/user/profile",
         formData,
         { withCredentials: true }
       );

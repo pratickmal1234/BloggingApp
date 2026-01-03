@@ -14,7 +14,7 @@ export default function EditPost() {
   useEffect(() => {
     const loadPost = async () => {
       const res = await axios.get(
-        `http://localhost:8003/blog/getUser`,
+        `https://bloggingapp-2.onrender.com/blog/getUser`,
         { withCredentials: true }
       );
 
@@ -34,7 +34,7 @@ export default function EditPost() {
     try {
       setLoading(true);
       await axios.put(
-        `http://localhost:8003/blog/edit/${id}`,
+        `https://bloggingapp-2.onrender.com/blog/edit/${id}`,
         { title, contain },
         { withCredentials: true }
       );

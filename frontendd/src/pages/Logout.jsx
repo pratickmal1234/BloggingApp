@@ -14,7 +14,7 @@ export function Logout() {
     try {
       // 🔥 Backend call → cookie destroy
       await axios.delete(
-        "http://localhost:8003/user/logout",
+        "https://bloggingapp-2.onrender.com/user/logout",
         { withCredentials: true, }
       );
 

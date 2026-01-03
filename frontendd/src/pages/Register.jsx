@@ -13,7 +13,7 @@ export function Register() {
       const da = { name, email, password };
 
       const response = await axios.post(
-        "http://localhost:8003/user/register",
+        "https://bloggingapp-2.onrender.com/user/register",
         da,
         { headers: { "Content-type": "application/json" } }
       );
